@@ -35,7 +35,7 @@ function main() {
         "add department",
         "add role",
         "add employee",
-        "updating employee role",
+        "update employee role",
       ],
     })
     .then((result) => {
@@ -139,4 +139,74 @@ function addRole() {
       );
     });
 }
-// ask question about empolyees with inquirer
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first",
+        message: "What is the first name",
+      },
+      {
+        type: "input",
+        name: "last",
+        message: "What is the last name",
+      },
+      {
+        type: "number",
+        name: "roleid",
+        message: "What is the role ID",
+      },
+      {
+        type: "number",
+        name: "managerid",
+        message: "What is the manager ID",
+      },
+    ])
+    .then((result) => {
+      connection.query(
+        "INSERT INTO employee SET ?",
+        {
+          first_name: result.first,
+          last_name: result.last,
+          role_id: result.roleid,
+          manager_id: result.managerid,
+        },
+        (err, res) => {
+          if (err) throw err;
+          console.log(`${res.affectedRows} role inserted!\n`);
+          // Call updateProduct AFTER the INSERT completes
+          main();
+        }
+      );
+    });
+}
+function updateRole() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "employeeID",
+        message: "What is the ID of the employee you want to update?",
+      },
+      { type: "input", name: "newRole", message: "What is the new role ID?" },
+    ])
+    .then((result) => {
+      connection.query(
+        "UPDATE employee SET ? WHERE ?",
+        [
+          {
+            role_id: result.newRole,
+          },
+          {
+            id: result.employeeID,
+          },
+        ],
+        (err, res) => {
+          if (err) throw err;
+          console.log(`${res.affectedRows} role updated!\n`);
+          main();
+        }
+      );
+    });
+}
